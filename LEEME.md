@@ -38,7 +38,18 @@ temporales: no tocan los datos reales.
 
 ## Crear el .exe e instalador
 
-Pendiente (ver el próximo paso del proyecto).
+1. **El .exe:** doble clic en `crear_exe.bat`. Instala PyInstaller, corre las pruebas y arma
+   `dist\SistemaDireccion\SistemaDireccion.exe` (modo carpeta: abre más rápido que un solo .exe).
+   Para probarlo, abre ese .exe directamente.
+2. **El instalador:** instala Inno Setup 6 (https://jrsoftware.org/isdl.php), abre `instalador.iss`
+   y presiona **Compilar** (Ctrl+F9). Sale `salida_instalador\Instalar_SistemaDireccion.exe`.
+3. **En la laptop de la directora:** doble clic en el instalador → Siguiente → Instalar.
+   Se instala solo para su usuario (no pide administrador) y deja un acceso directo en el escritorio.
+   Si aparece "Windows protegió su PC": **Más información → Ejecutar de todas formas**
+   (sale porque el programa no tiene firma digital).
+4. Desinstalar no borra los datos de `Documentos\Sistema Dirección`.
+
+Requisito: Windows 10 u 11 de 64 bits (Python 3.13 no funciona en Windows 7 u 8).
 
 ## Antes de la demo
 

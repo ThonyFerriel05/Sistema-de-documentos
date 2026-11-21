@@ -6,8 +6,10 @@ import sys
 import traceback
 
 from PySide6.QtCore import QTimer
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication, QMessageBox
 
+from database import CARPETA_PROGRAMA
 from servicios.inicio import preparar_sistema
 from vistas_qt.estilo import QSS
 
@@ -16,6 +18,7 @@ def main():
     app = QApplication(sys.argv)
     app.setStyle("Fusion")      # base neutra; encima va nuestro estilo
     app.setStyleSheet(QSS)
+    app.setWindowIcon(QIcon(str(CARPETA_PROGRAMA / "vistas_qt" / "iconos" / "sistema.ico")))
     try:
         preparar_sistema()      # crea la base y la plantilla inicial si no existen
         from vistas_qt.ventana import VentanaPrincipal
