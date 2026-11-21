@@ -132,7 +132,7 @@ class PruebasExpedidos(unittest.TestCase):
 
 
     def test_22_plantilla_oficial_con_tabla(self):
-        """RF13: en la plantilla oficial (A / VIA / DE en tabla), sin VIA se borra la fila."""
+        """RF13: la plantilla oficial (A / DE en tabla, con logos) se llena completa."""
         oficial = RAIZ_ORIGINAL / "plantillas" / "Oficio general.docx"
         tramite = TipoTramite.crear("Prueba plantilla oficial", oficial)
         for con_via in (True, False):
@@ -146,7 +146,7 @@ class PruebasExpedidos(unittest.TestCase):
             doc = WordDocument(str(oficio.generar_con_plantilla()))
             etiquetas = [fila.cells[1].text for fila in doc.tables[0].rows]
             texto = "\n".join(p.text for p in doc.paragraphs)
-            self.assertEqual(etiquetas, ["A", "VIA", "DE"] if con_via else ["A", "DE"])
+            self.assertEqual(etiquetas, ["A", "DE"])  # la plantilla oficial no lleva VIA
             self.assertIn("Yapacaní, 10 de marzo de 2032", texto)
             self.assertIn("OF. No. ", texto)
             self.assertNotIn("{{", texto + " ".join(c.text for f in doc.tables[0].rows for c in f.cells))

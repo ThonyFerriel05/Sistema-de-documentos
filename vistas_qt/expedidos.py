@@ -42,8 +42,6 @@ class FormularioOficio(FormularioBase):
         self.tramite = lista(list(self.tramites))
         self.a_nombre = campo_texto(base.destinatario_nombre if base else "", "Ej.: Ing. Juan Pérez")
         self.a_cargo = campo_texto(base.destinatario_cargo if base else "", "Ej.: Decano F.IN.I.")
-        self.via_nombre = campo_texto(base.via_nombre if base else "", "Opcional")
-        self.via_cargo = campo_texto(base.via_cargo if base else "", "Opcional")
         self.asunto = campo_texto(base.asunto if base else "", "Lo que va en REF.")
         self.requiere = QCheckBox("Requiere respuesta")
         self.requiere.setToolTip("Si no se marca, el oficio queda completado al enviarlo y no aparece en pendientes.")
@@ -58,8 +56,6 @@ class FormularioOficio(FormularioBase):
         f.addRow("Trámite", self.tramite)
         f.addRow("A (nombre)", self.a_nombre)
         f.addRow("Cargo", self.a_cargo)
-        f.addRow("VIA (nombre)", self.via_nombre)
-        f.addRow("Cargo VIA", self.via_cargo)
         f.addRow("Referencia", self.asunto)
         f.addRow("", self.requiere)
 
@@ -80,7 +76,9 @@ class FormularioOficio(FormularioBase):
         oficio = DocumentoExpedido(
             fecha_envio=fecha_iso(self.fecha),
             destinatario_nombre=self.a_nombre.text(), destinatario_cargo=self.a_cargo.text(),
-            via_nombre=self.via_nombre.text().strip(), via_cargo=self.via_cargo.text().strip(),
+            # VIA quitada del formulario el 21/11 (el oficio oficial no la usa).
+            # La base y la plantilla todavía la aceptan, por si la directora la pide.
+            via_nombre=None, via_cargo=None,
             asunto=self.asunto.text(), id_tipo=tramite.id_tipo,
             id_original=self.original.id_expedido if self.original else None,
             requiere_respuesta=self.requiere.isChecked(),
