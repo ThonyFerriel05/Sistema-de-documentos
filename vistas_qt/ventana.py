@@ -10,7 +10,7 @@ from modelos.acta import MODALIDADES
 from modelos.expedido import ESTADOS as ESTADOS_EXPEDIDO
 from modelos.recibido import CATEGORIAS, ESTADOS as ESTADOS_RECIBIDO
 
-from . import actas as acciones_actas, datos, expedidos as acciones_expedidos, pendientes as acciones_pendientes, recibidos as acciones_recibidos
+from . import actas as acciones_actas, datos, expedidos as acciones_expedidos, pendientes as acciones_pendientes, recibidos as acciones_recibidos, tramites as acciones_tramites
 from .estilo import TEXTO_SUAVE
 from .paginas import PaginaInicio, PaginaLista
 
@@ -124,7 +124,7 @@ class VentanaPrincipal(QMainWindow):
             texto_buscar="Buscar por carnet", texto_vacio="Todavía no hay actas registradas.",
         )
         tramites = PaginaLista(
-            "Trámites y plantillas", "Plantilla Word de cada trámite frecuente",
+            "Trámites y plantillas", "Doble clic o clic derecho sobre un trámite para abrir o reemplazar su plantilla",
             ["Trámite", "Plantilla"], datos.filas_tramites, boton="Agregar trámite",
             texto_buscar="Buscar trámite",
         )
@@ -135,6 +135,7 @@ class VentanaPrincipal(QMainWindow):
         acciones_recibidos.conectar(recibidos, self)
         acciones_pendientes.conectar(pendientes, self)
         acciones_actas.conectar(actas, self)
+        acciones_tramites.conectar(tramites, self)
         return [
             ("Inicio", inicio), ("Pendientes", pendientes), ("Oficios expedidos", expedidos),
             ("Documentos recibidos", recibidos), ("Actas de graduación", actas),

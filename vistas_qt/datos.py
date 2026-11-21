@@ -115,7 +115,15 @@ def filas_tramites(texto: str, filtros: dict):
     tramites = TipoTramite.listar()
     if texto:
         tramites = [t for t in tramites if texto.lower() in t.nombre.lower()]
-    return [[t.nombre, t.ruta_plantilla.split("/")[-1]] for t in tramites], tramites
+    filas = []
+    for t in tramites:
+        archivo = t.ruta_plantilla.split("/")[-1]
+        try:
+            t.obtener_plantilla()
+        except FileNotFoundError:
+            archivo += "  (no se encuentra el archivo)"
+        filas.append([t.nombre, archivo])
+    return filas, tramites
 
 
 # ---------- Inicio ----------

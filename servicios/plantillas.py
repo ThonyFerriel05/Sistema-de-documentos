@@ -34,6 +34,16 @@ def _todos_los_parrafos(documento):
             yield from de_contenedor(parte)
 
 
+# Sin estas marcas el oficio sale sin número, fecha, destinatario o REF.
+MARCAS_IMPORTANTES = ("{{CODIGO}}", "{{FECHA}}", "{{DESTINATARIO_NOMBRE}}", "{{ASUNTO}}")
+
+
+def marcas_faltantes(ruta_plantilla):
+    """Devuelve las marcas importantes que NO están en el Word (lista vacía = todo bien)."""
+    texto = " ".join(p.text for p in _todos_los_parrafos(WordDocument(str(ruta_plantilla))))
+    return [m for m in MARCAS_IMPORTANTES if m not in texto]
+
+
 def _reemplazar_en_parrafo(parrafo, datos):
     if "{{" not in parrafo.text:
         return
