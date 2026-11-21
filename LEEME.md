@@ -1,39 +1,50 @@
 # Sistema de control de documentación — Dirección de Carrera de Ingeniería en Sistemas (F.IN.I.)
 
-Versión beta. Python + CustomTkinter + SQLite.
+Versión beta. Python + PySide6 (ventanas) + SQLite (base de datos) + python-docx (Word).
 
 ## Cómo ejecutarlo (en tu PC)
 
-1. Instala Python 3.11 o superior (en Windows, marca "Add Python to PATH").
-2. En esta carpeta abre una terminal y ejecuta:
+1. Python 3.13 con el entorno `.venv` (creado con uv).
+2. En esta carpeta:
    ```
-   pip install -r requirements.txt
-   python main.py
+   uv pip install -r requirements.txt
+   .venv\Scripts\python.exe main_qt.py
    ```
-   La primera vez se crean solos `direccion.db`, la carpeta `plantillas/` con el "Oficio general"
-   y la carpeta `archivos/`.
+   (`main.py` abre la interfaz vieja de CustomTkinter, que queda solo como respaldo.)
+
+## Dónde se guardan los datos (RNF04)
+
+Los datos NO van en la carpeta del programa (una vez instalado, Windows no deja escribir ahí).
+Van en **Documentos\Sistema Dirección**:
+
+| Qué | Dónde |
+|---|---|
+| Base de datos | `direccion.db` |
+| Escaneados y Word de los oficios | `archivos\` |
+| Plantillas en uso | `plantillas\` (las que vienen con el programa se copian la primera vez) |
+| Copias de seguridad hechas "en esta computadora" | `respaldos\` |
+| Fecha de la última copia (para el aviso de 7 días) | `ultimo_respaldo.txt` |
+
+La primera vez, si encuentra datos en el lugar viejo (la carpeta del programa), los **copia**
+a Documentos sin borrar los originales.
 
 ## Pruebas automáticas (fase de Pruebas)
 
 ```
-python -m unittest pruebas.prueba_sistema -v
+.venv\Scripts\python.exe -m unittest pruebas.prueba_sistema -v
 ```
-Son 21 pruebas, cada una dice qué requisito verifica. Usan una copia temporal: no tocan los datos reales.
+Son 22 pruebas, cada una dice qué requisito verifica. Usan una copia y una carpeta de datos
+temporales: no tocan los datos reales.
 
-## Crear el .exe para la directora
+## Crear el .exe e instalador
 
-```
-pip install pyinstaller
-pyinstaller --noconsole --onefile --name SistemaDireccion --collect-all customtkinter main.py
-```
-El .exe queda en `dist/`. Cópialo a una carpeta propia (por ejemplo `C:\SistemaDireccion\`):
-la base de datos, los escaneados y las plantillas se crean al lado del .exe.
+Pendiente (ver el próximo paso del proyecto).
 
-## Antes de entregarlo
+## Antes de la demo
 
-- Abre `plantillas/Oficio general.docx` y agrega los dos logos del encabezado (UAGRM y carrera).
-  No borres las marcas `{{...}}`.
-- En "Configuración y respaldo", escribe el último número de oficio que ya se usó en papel en 2026.
+- Base limpia: cerrar el programa y borrar `Documentos\Sistema Dirección\direccion.db`
+  y `archivos\oficios_generados`. Al abrir se registran solas las plantillas incluidas.
+- En "Configuración y respaldo", escribir el último número de oficio usado en papel.
 
 ## Cómo está organizado (coincide con el diseño)
 
@@ -46,9 +57,12 @@ la base de datos, los escaneados y las plantillas se crean al lado del .exe.
 | `modelos/acta.py` | Acta | RF06, RF07, RF08, RF18 (número interno), RF19 (filtro por modalidad) |
 | `modelos/tipo_tramite.py` | TipoTramite | RF13, RF14 |
 | `modelos/configuracion.py` | Número inicial de la gestión | RF16 |
+| `plantillas/` | Plantillas oficiales: Oficio general y Remito de actas | RF13 |
 | `servicios/plantillas.py` | Llena el Word | Secuencia "registrar expedido", pasos 6 a 9 |
 | `servicios/respaldo.py` | Copia de seguridad | RF12 |
-| `vistas/` | Las pantallas | "Pantalla" en los diagramas de secuencia |
+| `servicios/inicio.py` | Prepara la carpeta de datos y las plantillas la primera vez | RNF04 |
+| `vistas_qt/` | Las pantallas (PySide6) | "Pantalla" en los diagramas de secuencia |
+| `vistas/` | Pantallas viejas (CustomTkinter), solo respaldo | — |
 | `pruebas/` | Pruebas automáticas | Fase de pruebas |
 
 ## Cambios del 19 de noviembre de 2026

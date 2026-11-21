@@ -8,12 +8,50 @@ import sqlite3
 import sys
 from pathlib import Path
 
-# La base de datos es un solo archivo dentro de la carpeta del sistema.
-# Si el programa está convertido en .exe, la carpeta es la del .exe.
+import os
+
+NOMBRE_CARPETA_DATOS = "Sistema Dirección"
+
+
+def _carpeta_documentos():
+    """La carpeta 'Documentos' del usuario (aunque Windows la haya movido a OneDrive)."""
+    if sys.platform.startswith("win"):
+        try:
+            import ctypes
+            from ctypes import wintypes
+            from uuid import UUID
+
+            class GUID(ctypes.Structure):
+                _fields_ = [("d1", wintypes.DWORD), ("d2", wintypes.WORD),
+                            ("d3", wintypes.WORD), ("d4", ctypes.c_ubyte * 8)]
+
+            u = UUID("{FDD39AD0-238F-46AF-ADB4-6C85480369C7}")  # FOLDERID_Documents
+            guid = GUID(u.fields[0], u.fields[1], u.fields[2],
+                        (ctypes.c_ubyte * 8).from_buffer_copy(u.bytes[8:]))
+            ruta = ctypes.c_wchar_p()
+            if ctypes.windll.shell32.SHGetKnownFolderPath(ctypes.byref(guid), 0, None,
+                                                         ctypes.byref(ruta)) == 0:
+                carpeta = Path(ruta.value)
+                ctypes.windll.ole32.CoTaskMemFree(ruta)
+                return carpeta
+        except Exception:
+            pass
+    return Path.home() / "Documents"
+
+
+# CARPETA_PROGRAMA: donde está el programa (el código o el .exe) y las plantillas que
+# vienen con él. Una vez instalado, Windows no deja escribir ahí.
 if getattr(sys, "frozen", False):
-    CARPETA_SISTEMA = Path(sys.executable).resolve().parent
+    CARPETA_PROGRAMA = Path(getattr(sys, "_MEIPASS", Path(sys.executable).resolve().parent))
 else:
-    CARPETA_SISTEMA = Path(__file__).resolve().parent
+    CARPETA_PROGRAMA = Path(__file__).resolve().parent
+
+# CARPETA_SISTEMA: los DATOS (RNF04): base de datos, escaneados, Word generados,
+# plantillas en uso y copias de seguridad. Va en Documentos\Sistema Dirección.
+# Las pruebas usan otra carpeta con la variable SISTEMA_DIRECCION_DATOS.
+CARPETA_SISTEMA = Path(os.environ.get("SISTEMA_DIRECCION_DATOS")
+                       or _carpeta_documentos() / NOMBRE_CARPETA_DATOS)
+CARPETA_SISTEMA.mkdir(parents=True, exist_ok=True)
 RUTA_BD = CARPETA_SISTEMA / "direccion.db"
 
 

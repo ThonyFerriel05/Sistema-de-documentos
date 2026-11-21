@@ -7,6 +7,7 @@ Se ejecutan con:   python -m unittest pruebas.prueba_sistema -v
 Usan una copia temporal del sistema, así que NO tocan los datos reales.
 """
 
+import os
 import shutil
 import sys
 import tempfile
@@ -22,6 +23,8 @@ def preparar_copia():
     ignorar = shutil.ignore_patterns("direccion.db", "archivos", "respaldos", "plantillas",
                                      "__pycache__", "pruebas", ".venv", ".git")
     shutil.copytree(RAIZ_ORIGINAL, temporal / "sistema", ignore=ignorar)
+    # Los datos de prueba van a una carpeta temporal, nunca a Documentos.
+    os.environ["SISTEMA_DIRECCION_DATOS"] = str(temporal / "datos")
     sys.path.insert(0, str(temporal / "sistema"))
     return temporal
 
