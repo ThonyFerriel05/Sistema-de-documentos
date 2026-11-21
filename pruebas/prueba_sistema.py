@@ -20,7 +20,7 @@ def preparar_copia():
     """Copia el código a una carpeta temporal y trabaja ahí."""
     temporal = Path(tempfile.mkdtemp())
     ignorar = shutil.ignore_patterns("direccion.db", "archivos", "respaldos", "plantillas",
-                                     "__pycache__", "pruebas")
+                                     "__pycache__", "pruebas", ".venv", ".git")
     shutil.copytree(RAIZ_ORIGINAL, temporal / "sistema", ignore=ignorar)
     sys.path.insert(0, str(temporal / "sistema"))
     return temporal
@@ -129,6 +129,27 @@ class PruebasExpedidos(unittest.TestCase):
                       [o.id_expedido for o in DocumentoExpedido.buscar("01", gestion=2034)])
         self.assertIn(oficio.id_expedido,
                       [o.id_expedido for o in DocumentoExpedido.buscar("certificación")])
+
+
+    def test_22_plantilla_oficial_con_tabla(self):
+        """RF13: en la plantilla oficial (A / VIA / DE en tabla), sin VIA se borra la fila."""
+        oficial = RAIZ_ORIGINAL / "plantillas" / "Oficio general.docx"
+        tramite = TipoTramite.crear("Prueba plantilla oficial", oficial)
+        for con_via in (True, False):
+            oficio = DocumentoExpedido(
+                fecha_envio="2032-03-10", destinatario_nombre="M.Sc. Ejemplo Pérez",
+                destinatario_cargo="Responsable de caja", asunto=f"Prueba via {con_via}",
+                id_tipo=tramite.id_tipo,
+                via_nombre="M.Sc. Decano Ejemplo" if con_via else None,
+                via_cargo="DECANO" if con_via else None,
+            ).registrar()
+            doc = WordDocument(str(oficio.generar_con_plantilla()))
+            etiquetas = [fila.cells[1].text for fila in doc.tables[0].rows]
+            texto = "\n".join(p.text for p in doc.paragraphs)
+            self.assertEqual(etiquetas, ["A", "VIA", "DE"] if con_via else ["A", "DE"])
+            self.assertIn("Yapacaní, 10 de marzo de 2032", texto)
+            self.assertIn("OF. No. ", texto)
+            self.assertNotIn("{{", texto + " ".join(c.text for f in doc.tables[0].rows for c in f.cells))
 
 
 class PruebasRecibidos(unittest.TestCase):

@@ -34,6 +34,15 @@ def _todos_los_parrafos(documento):
             yield from de_contenedor(parte)
 
 
+def _filas_de_tablas(documento):
+    """Filas de todas las tablas: cuerpo, encabezado y pie de página."""
+    contenedores = [documento] + [parte for s in documento.sections
+                                  for parte in (s.header, s.footer)]
+    for contenedor in contenedores:
+        for tabla in contenedor.tables:
+            yield from tabla.rows
+
+
 # Sin estas marcas el oficio sale sin número, fecha, destinatario o REF.
 MARCAS_IMPORTANTES = ("{{CODIGO}}", "{{FECHA}}", "{{DESTINATARIO_NOMBRE}}", "{{ASUNTO}}")
 
@@ -71,6 +80,13 @@ def llenar_plantilla(ruta_plantilla, datos, ruta_salida):
     """
     documento = WordDocument(str(ruta_plantilla))
     sin_via = not datos.get("{{VIA_NOMBRE}}")
+
+    if sin_via:
+        # En la plantilla oficial, A / VIA / DE están en una tabla sin bordes:
+        # si no hay VIA se borra la fila completa (con la palabra "VIA").
+        for fila in list(_filas_de_tablas(documento)):
+            if any(marca in celda.text for celda in fila.cells for marca in MARCAS_VIA):
+                fila._tr.getparent().remove(fila._tr)
 
     for parrafo in list(_todos_los_parrafos(documento)):
         if sin_via and any(marca in parrafo.text for marca in MARCAS_VIA):
