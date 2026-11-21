@@ -68,7 +68,7 @@ Requisito: Windows 10 u 11 de 64 bits (Python 3.13 no funciona en Windows 7 u 8)
 | `modelos/acta.py` | Acta | RF06, RF07, RF08, RF18 (número interno), RF19 (filtro por modalidad) |
 | `modelos/tipo_tramite.py` | TipoTramite | RF13, RF14 |
 | `modelos/configuracion.py` | Número inicial de la gestión | RF16 |
-| `plantillas/` | Plantillas oficiales: Oficio general y Remito de actas | RF13 |
+| `plantillas/` | Plantilla oficial "Oficio general" (formato real de la dirección) | RF13 |
 | `servicios/plantillas.py` | Llena el Word | Secuencia "registrar expedido", pasos 6 a 9 |
 | `servicios/respaldo.py` | Copia de seguridad | RF12 |
 | `servicios/inicio.py` | Prepara la carpeta de datos y las plantillas la primera vez | RNF04 |

@@ -88,10 +88,10 @@ class CampoWord(QWidget):
 class FormularioTramite(FormularioBase):
     def __init__(self, padre):
         super().__init__(padre, "Agregar trámite",
-                         "Un trámite es un oficio que se repite (ej.: remito de actas). "
+                         "Un trámite es un oficio que se repite (ej.: solicitud de certificación presupuestaria). "
                          "Su plantilla ya trae la REF. y el cuerpo escritos.",
                          "Agregar")
-        self.nombre = campo_texto("", "Ej.: Remito de actas de graduación")
+        self.nombre = campo_texto("", "Ej.: Solicitud de certificación presupuestaria")
         self.word = CampoWord()
         self.campos.addRow("Nombre", self.nombre)
         self.campos.addRow("Plantilla", self.word)

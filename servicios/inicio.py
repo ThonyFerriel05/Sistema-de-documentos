@@ -65,7 +65,7 @@ def preparar_sistema():
         if not ruta.exists():
             crear_plantilla_base(ruta)
         TipoTramite.crear(NOMBRE_TRAMITE_BASE, ruta)
-        # Las demás plantillas que vienen con el programa (ej.: Remito de actas de graduación).
+        # Si en el futuro vienen más plantillas con el programa, también se registran.
         for otra in sorted(CARPETA_PLANTILLAS.glob("*.docx")):
             if otra.stem != NOMBRE_TRAMITE_BASE and not otra.name.startswith("~$"):
                 TipoTramite.crear(otra.stem, otra)
