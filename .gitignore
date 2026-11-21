@@ -1,0 +1,15 @@
+# Entorno de Python (se recrea con uv)
+.venv/
+__pycache__/
+*.pyc
+
+# Datos de uso (base y escaneados): no son código.
+# Se protegen con la copia de seguridad del sistema, no con git.
+direccion.db
+archivos/
+
+# Lo que genera PyInstaller / Inno Setup
+build/
+dist/
+*.spec
+salida_instalador/

@@ -1,0 +1,30 @@
+"""Punto de entrada de la nueva interfaz (PySide6).
+
+Uso:  python main_qt.py
+"""
+import sys
+import traceback
+
+from PySide6.QtWidgets import QApplication, QMessageBox
+
+from servicios.inicio import preparar_sistema
+from vistas_qt.estilo import QSS
+
+
+def main():
+    app = QApplication(sys.argv)
+    app.setStyle("Fusion")      # base neutra; encima va nuestro estilo
+    app.setStyleSheet(QSS)
+    try:
+        preparar_sistema()      # crea la base y la plantilla inicial si no existen
+        from vistas_qt.ventana import VentanaPrincipal
+        ventana = VentanaPrincipal()
+        ventana.show()
+    except Exception:
+        QMessageBox.critical(None, "Error al iniciar", traceback.format_exc())
+        sys.exit(1)
+    sys.exit(app.exec())
+
+
+if __name__ == "__main__":
+    main()
