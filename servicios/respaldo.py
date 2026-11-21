@@ -14,6 +14,10 @@ from database import CARPETA_SISTEMA, RUTA_BD
 
 CARPETA_RESPALDOS = CARPETA_SISTEMA / "respaldos"
 CARPETAS_A_COPIAR = ("archivos", "plantillas")
+# Fecha de la última copia (para el recordatorio de cada 7 días).
+# Es un archivo de texto y no una tabla, para no cambiar el diseño de la base.
+RUTA_ULTIMO_RESPALDO = CARPETA_SISTEMA / "ultimo_respaldo.txt"
+DIAS_RECORDATORIO = 7
 
 
 def crear_respaldo(carpeta_destino=None):
@@ -46,4 +50,19 @@ def crear_respaldo(carpeta_destino=None):
                 for ruta in carpeta.rglob("*"):
                     if ruta.is_file():
                         archivo_zip.write(ruta, ruta.relative_to(CARPETA_SISTEMA).as_posix())
+    RUTA_ULTIMO_RESPALDO.write_text(datetime.now().isoformat(timespec="minutes"), encoding="utf-8")
     return ruta_zip
+
+
+def fecha_ultimo_respaldo():
+    """Fecha y hora de la última copia, o None si nunca se hizo."""
+    try:
+        return datetime.fromisoformat(RUTA_ULTIMO_RESPALDO.read_text(encoding="utf-8").strip())
+    except (OSError, ValueError):
+        return None
+
+
+def dias_sin_respaldo():
+    """Días desde la última copia, o None si nunca se hizo."""
+    ultima = fecha_ultimo_respaldo()
+    return None if ultima is None else (datetime.now() - ultima).days

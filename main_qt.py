@@ -5,6 +5,7 @@ Uso:  python main_qt.py
 import sys
 import traceback
 
+from PySide6.QtCore import QTimer
 from PySide6.QtWidgets import QApplication, QMessageBox
 
 from servicios.inicio import preparar_sistema
@@ -20,6 +21,7 @@ def main():
         from vistas_qt.ventana import VentanaPrincipal
         ventana = VentanaPrincipal()
         ventana.show()
+        QTimer.singleShot(400, ventana.recordar_copia)  # primero se ve la ventana, después el aviso
     except Exception:
         QMessageBox.critical(None, "Error al iniciar", traceback.format_exc())
         sys.exit(1)

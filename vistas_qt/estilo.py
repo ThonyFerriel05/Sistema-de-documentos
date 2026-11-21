@@ -98,6 +98,9 @@ QHeaderView::section {{
 /* ---- Formularios ---- */
 QDialog#formulario {{ background: {FONDO}; }}
 #tituloFormulario {{ font-size: 20px; font-weight: 600; }}
+#estadoCopia {{ font-weight: 600; padding: 6px 0; }}
+#estadoCopia[color="verde"] {{ color: {ESTADO_COLOR["completado"]}; }}
+#estadoCopia[color="rojo"] {{ color: {ESTADO_COLOR["pendiente"]}; }}
 #notaFormulario {{ color: {ACENTO}; font-weight: 600; }}
 QLineEdit#campo, QDateEdit#campo, QDateTimeEdit#campo, QComboBox#campo {{
     background: white; border: 1px solid #DADDE3; border-radius: 8px;

@@ -10,7 +10,7 @@ from modelos.acta import MODALIDADES
 from modelos.expedido import ESTADOS as ESTADOS_EXPEDIDO
 from modelos.recibido import CATEGORIAS, ESTADOS as ESTADOS_RECIBIDO
 
-from . import actas as acciones_actas, datos, expedidos as acciones_expedidos, pendientes as acciones_pendientes, recibidos as acciones_recibidos, tramites as acciones_tramites
+from . import actas as acciones_actas, configuracion as pantalla_configuracion, datos, expedidos as acciones_expedidos, pendientes as acciones_pendientes, recibidos as acciones_recibidos, tramites as acciones_tramites
 from .estilo import TEXTO_SUAVE
 from .paginas import PaginaInicio, PaginaLista
 
@@ -54,6 +54,11 @@ class VentanaPrincipal(QMainWindow):
 
         self.setCentralWidget(central)
         self.lista_menu.setCurrentRow(0)
+
+    def recordar_copia(self):
+        """Se llama una vez, ya con la ventana abierta (RF12: aviso cada 7 días)."""
+        ultima = self.lista_menu.count() - 1   # "Configuración y respaldo"
+        pantalla_configuracion.recordar_copia(self, lambda: self.lista_menu.setCurrentRow(ultima))
 
     # ---- menú lateral ----
     def _crear_menu(self) -> QWidget:
@@ -128,9 +133,7 @@ class VentanaPrincipal(QMainWindow):
             ["Trámite", "Plantilla"], datos.filas_tramites, boton="Agregar trámite",
             texto_buscar="Buscar trámite",
         )
-        # POR HACER: pantalla de configuración (número inicial RF16 y copia de seguridad RF12)
-        config = PaginaInicio(lambda: [("—", "Pantalla en construcción")],
-                              "Configuración y respaldo", "Número inicial de oficio y copias de seguridad")
+        config = pantalla_configuracion.PaginaConfiguracion()
         acciones_expedidos.conectar(expedidos, self)
         acciones_recibidos.conectar(recibidos, self)
         acciones_pendientes.conectar(pendientes, self)

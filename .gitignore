@@ -13,3 +13,5 @@ build/
 dist/
 *.spec
 salida_instalador/
+ultimo_respaldo.txt
+respaldos/
