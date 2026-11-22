@@ -128,15 +128,48 @@ def filas_tramites(texto: str, filtros: dict):
 
 # ---------- Inicio ----------
 
-def numeros_inicio():
+def _dias_desde(iso: str) -> int:
+    """Días desde una fecha guardada como '2026-09-21' o '2026-09-21 13:05'."""
+    return (date.today() - date.fromisoformat(iso[:10])).days
+
+
+def resumen_inicio():
+    """Todo lo que muestra la pantalla de Inicio, en un solo lugar."""
+    from servicios.respaldo import dias_sin_respaldo
+
     anio = date.today().year
     with conectar() as c:
         recibidos_anio = c.execute(
             "SELECT COUNT(*) FROM documento_recibido WHERE gestion = ?", (anio,)).fetchone()[0]
         actas_anio = c.execute("SELECT COUNT(*) FROM acta WHERE gestion = ?", (anio,)).fetchone()[0]
-    return [
-        (str(len(DocumentoRecibido.pendientes())), "Recibidos por responder"),
-        (str(len(DocumentoExpedido.pendientes())), "Oficios esperando respuesta"),
-        (str(recibidos_anio), f"Recibidos en {anio}"),
-        (str(actas_anio), f"Actas registradas en {anio}"),
-    ]
+        hay_datos = any(c.execute(f"SELECT 1 FROM {t} LIMIT 1").fetchone()
+                        for t in ("documento_expedido", "documento_recibido", "acta"))
+    recibidos = DocumentoRecibido.pendientes()
+    oficios = DocumentoExpedido.pendientes()
+
+    # Lo más urgente: lo que lleva más días esperando va primero (RF10)
+    urgentes = [{
+        "tipo": "Recibido", "numero": d.nro_oficio, "quien": d.remitente, "asunto": d.asunto,
+        "estado": d.estado, "dias": _dias_desde(d.fecha_hora_recepcion),
+    } for d in recibidos] + [{
+        "tipo": "Oficio", "numero": o.numero_corto, "quien": o.destinatario_nombre, "asunto": o.asunto,
+        "estado": o.estado, "dias": _dias_desde(o.fecha_envio),
+    } for o in oficios]
+    urgentes.sort(key=lambda u: -u["dias"])
+
+    return {
+        "numeros": [
+            {"valor": len(recibidos), "etiqueta": "Recibidos por responder",
+             "seccion": "Pendientes", "color": "pendiente"},
+            {"valor": len(oficios), "etiqueta": "Oficios esperando respuesta",
+             "seccion": "Pendientes", "color": "esperando"},
+            {"valor": recibidos_anio, "etiqueta": f"Recibidos en {anio}",
+             "seccion": "Documentos recibidos"},
+            {"valor": actas_anio, "etiqueta": f"Actas registradas en {anio}",
+             "seccion": "Actas de graduación"},
+        ],
+        "urgentes": urgentes,
+        "total_pendientes": len(urgentes),
+        "dias_copia": dias_sin_respaldo(),
+        "hay_datos": hay_datos,
+    }

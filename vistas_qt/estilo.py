@@ -53,8 +53,23 @@ QListWidget#listaMenu::item:selected {{
 #subtituloPagina {{ color: {TEXTO_SUAVE}; font-size: 14px; }}
 
 /* ---- Inicio: números sueltos, sin tarjetas ---- */
-#numeroGrande {{ font-size: 44px; font-weight: 600; }}
+#saludoInicio {{ font-size: 34px; font-weight: 600; }}
+#fechaInicio {{ color: {TEXTO_SUAVE}; font-size: 15px; }}
+#numeroGrande {{ font-size: 64px; font-weight: 300; color: {TEXTO}; }}
 #etiquetaNumero {{ color: {TEXTO_SUAVE}; font-size: 14px; }}
+#seccionInicio {{ font-size: 13px; font-weight: 600; color: {TEXTO_SUAVE}; letter-spacing: 1px; }}
+QPushButton#enlaceInicio {{ color: {ACENTO}; padding: 4px 8px; }}
+QPushButton#enlaceInicio:hover {{ background: {ACENTO_SUAVE}; }}
+QPushButton#accesoInicio {{ color: {ACENTO}; font-weight: 600; padding: 8px 14px; }}
+QPushButton#accesoInicio:hover {{ background: {ACENTO_SUAVE}; }}
+#filaUrgente {{ border-radius: 10px; }}
+#filaUrgente:hover {{ background: {FILA_HOVER}; }}
+#puntoEstado {{ font-size: 11px; }}
+#tipoUrgente {{ color: {TEXTO_SUAVE}; font-size: 13px; }}
+#numeroUrgente {{ font-weight: 600; }}
+#quienUrgente, #tiempoUrgente {{ color: {TEXTO_SUAVE}; font-size: 13px; }}
+#vacioInicio {{ color: {ESTADO_COLOR["completado"]}; font-size: 15px; padding: 10px 12px; }}
+#textoCopia {{ color: {TEXTO_SUAVE}; font-size: 13px; }}
 
 /* ---- Botones ---- */
 QPushButton {{

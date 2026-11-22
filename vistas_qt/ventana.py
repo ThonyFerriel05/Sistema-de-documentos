@@ -12,7 +12,8 @@ from modelos.recibido import CATEGORIAS, ESTADOS as ESTADOS_RECIBIDO
 
 from . import actas as acciones_actas, configuracion as pantalla_configuracion, datos, expedidos as acciones_expedidos, pendientes as acciones_pendientes, recibidos as acciones_recibidos, tramites as acciones_tramites
 from .estilo import TEXTO_SUAVE
-from .paginas import PaginaInicio, PaginaLista
+from .inicio import PaginaInicio
+from .paginas import PaginaLista
 
 
 class DelegadoMenu(QStyledItemDelegate):
@@ -92,13 +93,36 @@ class VentanaPrincipal(QMainWindow):
             pagina.recargar()  # siempre muestra lo último guardado
         self.actualizar_contador_pendientes()
 
+    def ir_a_seccion(self, nombre: str):
+        """Desde Inicio: cambia a la sección con ese nombre."""
+        for i, (n, _) in enumerate(self.secciones):
+            if n == nombre:
+                self.lista_menu.setCurrentRow(i)
+                return
+
+    def _registrar_desde_inicio(self, que: str):
+        """Los accesos '+ Oficio', '+ Recibido', '+ Acta' de Inicio abren el mismo formulario
+        que el botón de su sección y, al guardar, actualizan Inicio y su lista."""
+        modulo, seccion = {
+            "oficio": (acciones_expedidos, "Oficios expedidos"),
+            "recibido": (acciones_recibidos, "Documentos recibidos"),
+            "acta": (acciones_actas, "Actas de graduación"),
+        }[que]
+        pagina = dict(self.secciones)[seccion]
+
+        def al_cambiar():
+            pagina.recargar()
+            self.paginas.currentWidget().recargar()
+            self.actualizar_contador_pendientes()
+        modulo.registrar(self, al_cambiar)
+
     def actualizar_contador_pendientes(self):
         item = self.lista_menu.item(1)  # "Pendientes"
         item.setData(Qt.UserRole, datos.total_pendientes() or None)
 
     # ---- pantallas ----
     def _crear_paginas(self):
-        inicio = PaginaInicio(datos.numeros_inicio)
+        inicio = PaginaInicio(datos.resumen_inicio, self.ir_a_seccion, self._registrar_desde_inicio)
         pendientes = PaginaLista(
             "Pendientes", "Recibidos por responder y oficios que esperan respuesta. Doble clic para ver acciones",
             ["Tipo", "Número", "Remitente / destinatario", "Asunto", "Fecha", "Estado"],

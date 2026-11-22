@@ -8,7 +8,7 @@ from typing import Callable
 
 from PySide6.QtCore import Qt, QTimer, Signal
 from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QLineEdit, QComboBox, QGridLayout,
+    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QLineEdit, QComboBox,
 )
 
 from .tabla import ModeloTabla, crear_tabla
@@ -29,40 +29,6 @@ def _encabezado(titulo: str, subtitulo: str, boton: str | None = None):
         b.setCursor(Qt.PointingHandCursor)
         fila.addWidget(b, alignment=Qt.AlignTop)
     return fila, b, t, s
-
-
-class PaginaInicio(QWidget):
-    """Números grandes sueltos, sin tarjetas. 'fuente' devuelve [(valor, etiqueta), ...]."""
-
-    def __init__(self, fuente: Callable[[], list[tuple[str, str]]],
-                 titulo: str = "Inicio", subtitulo: str = "Lo que necesita tu atención hoy"):
-        super().__init__()
-        self.fuente = fuente
-        lay = QVBoxLayout(self)
-        lay.setContentsMargins(40, 32, 40, 32)
-        lay.setSpacing(36)
-        enc, _, _, _ = _encabezado(titulo, subtitulo)
-        lay.addLayout(enc)
-
-        self.grilla = QGridLayout()
-        self.grilla.setHorizontalSpacing(64)
-        self.grilla.setVerticalSpacing(0)
-        lay.addLayout(self.grilla)
-        lay.addStretch()
-        self.numeros: list[QLabel] = []
-        self.etiquetas: list[QLabel] = []
-
-    def recargar(self):
-        datos = self.fuente()
-        while len(self.numeros) < len(datos):
-            i = len(self.numeros)
-            n = QLabel(); n.setObjectName("numeroGrande")
-            e = QLabel(); e.setObjectName("etiquetaNumero")
-            self.grilla.addWidget(n, 0, i); self.grilla.addWidget(e, 1, i)
-            self.numeros.append(n); self.etiquetas.append(e)
-        self.grilla.setColumnStretch(len(datos), 1)
-        for (valor, etiqueta), n, e in zip(datos, self.numeros, self.etiquetas):
-            n.setText(valor); e.setText(etiqueta)
 
 
 class PaginaLista(QWidget):
