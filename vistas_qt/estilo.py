@@ -58,6 +58,9 @@ QListWidget#listaMenu::item:selected {{
 #numeroGrande {{ font-size: 64px; font-weight: 300; color: {TEXTO}; }}
 #etiquetaNumero {{ color: {TEXTO_SUAVE}; font-size: 14px; }}
 #seccionInicio {{ font-size: 13px; font-weight: 600; color: {TEXTO_SUAVE}; letter-spacing: 1px; }}
+QPushButton#botonAtras {{ color: {ACENTO}; padding: 6px 12px; border-radius: 8px; text-align: left; }}
+QPushButton#botonAtras:hover {{ background: {ACENTO_SUAVE}; }}
+QPushButton#botonAtras:disabled {{ color: {TEXTO_SUAVE}; }}
 QPushButton#enlaceInicio {{ color: {ACENTO}; padding: 4px 8px; }}
 QPushButton#enlaceInicio:hover {{ background: {ACENTO_SUAVE}; }}
 QPushButton#accesoInicio {{ color: {ACENTO}; font-weight: 600; padding: 8px 14px; }}

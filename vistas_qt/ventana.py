@@ -1,9 +1,10 @@
 """Ventana principal: menú lateral a la izquierda + pantalla elegida a la derecha."""
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QEvent
+from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtGui import QColor
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QHBoxLayout, QVBoxLayout, QLabel, QListWidget, QListWidgetItem,
-    QStackedWidget, QStyledItemDelegate,
+    QStackedWidget, QStyledItemDelegate, QPushButton, QApplication,
 )
 
 from modelos.acta import MODALIDADES
@@ -40,6 +41,11 @@ class VentanaPrincipal(QMainWindow):
         self.setMinimumSize(1100, 640)   # entra en una laptop de 1366×768
         self.resize(1280, 720)
 
+        # Historial para el botón Atrás: secciones visitadas antes de la actual.
+        self.historial: list[int] = []
+        self._actual = 0
+        self._volviendo = False
+
         central = QWidget()
         raiz = QHBoxLayout(central)
         raiz.setContentsMargins(0, 0, 0, 0)
@@ -55,6 +61,27 @@ class VentanaPrincipal(QMainWindow):
 
         self.setCentralWidget(central)
         self.lista_menu.setCurrentRow(0)
+
+        # Volver atrás también con el teclado (Alt + flecha izquierda)
+        # y con el botón "atrás" lateral del mouse.
+        QShortcut(QKeySequence("Alt+Left"), self, activated=self.atras)
+        QShortcut(QKeySequence(QKeySequence.Back), self, activated=self.atras)
+        QApplication.instance().installEventFilter(self)
+
+    def eventFilter(self, objeto, evento):
+        if (evento.type() == QEvent.MouseButtonRelease and evento.button() == Qt.BackButton
+                and self.isActiveWindow()):
+            self.atras()
+            return True
+        return super().eventFilter(objeto, evento)
+
+    def atras(self):
+        """Vuelve a la sección anterior (como el botón Atrás de un navegador)."""
+        if not self.historial:
+            return
+        self._volviendo = True
+        self.lista_menu.setCurrentRow(self.historial.pop())
+        self._volviendo = False
 
     def recordar_copia(self):
         """Se llama una vez, ya con la ventana abierta (RF12: aviso cada 7 días)."""
@@ -72,7 +99,15 @@ class VentanaPrincipal(QMainWindow):
         nombre = QLabel("Dirección de Carrera"); nombre.setObjectName("nombreSistema")
         sub = QLabel("Ingeniería en Sistemas · F.IN.I."); sub.setObjectName("subNombre")
         lay.addWidget(nombre); lay.addWidget(sub)
-        lay.addSpacing(18)
+        lay.addSpacing(10)
+
+        self.boton_atras = QPushButton("←  Atrás"); self.boton_atras.setObjectName("botonAtras")
+        self.boton_atras.setCursor(Qt.PointingHandCursor)
+        self.boton_atras.setToolTip("Volver a la sección anterior (Alt + ←)")
+        self.boton_atras.clicked.connect(self.atras)
+        self.boton_atras.setEnabled(False)
+        lay.addWidget(self.boton_atras, alignment=Qt.AlignLeft)
+        lay.addSpacing(8)
 
         self.lista_menu = QListWidget(); self.lista_menu.setObjectName("listaMenu")
         self.lista_menu.setCursor(Qt.PointingHandCursor)
@@ -87,6 +122,14 @@ class VentanaPrincipal(QMainWindow):
         return menu
 
     def _ir_a(self, i: int):
+        if i < 0:
+            return
+        if not self._volviendo and i != self._actual:
+            self.historial.append(self._actual)
+            del self.historial[:-30]          # no hace falta recordar más
+        self._actual = i
+        if hasattr(self, "boton_atras"):
+            self.boton_atras.setEnabled(bool(self.historial))
         self.paginas.setCurrentIndex(i)
         pagina = self.paginas.currentWidget()
         if hasattr(pagina, "recargar"):
