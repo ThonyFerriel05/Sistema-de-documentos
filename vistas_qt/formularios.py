@@ -20,16 +20,28 @@ LIMITE_ESCANEADO_MB = 10
 
 # ---------- mensajes ----------
 
+def _aviso(padre, icono, titulo, texto, botones) -> QMessageBox:
+    """Aviso con los botones en español (RNF03): Qt los trae en inglés."""
+    caja = QMessageBox(icono, titulo, texto, QMessageBox.NoButton, padre)
+    for boton, nombre in botones:
+        caja.addButton(boton).setText(nombre)
+    return caja
+
+
 def mostrar_error(padre, error):
-    QMessageBox.warning(padre, "No se pudo completar", str(error))
+    _aviso(padre, QMessageBox.Warning, "No se pudo completar", str(error),
+           [(QMessageBox.Ok, "Aceptar")]).exec()
 
 
 def mostrar_info(padre, texto):
-    QMessageBox.information(padre, "Listo", texto)
+    _aviso(padre, QMessageBox.Information, "Listo", texto, [(QMessageBox.Ok, "Aceptar")]).exec()
 
 
 def confirmar(padre, texto) -> bool:
-    return QMessageBox.question(padre, "Confirmar", texto) == QMessageBox.Yes
+    caja = _aviso(padre, QMessageBox.Question, "Confirmar", texto,
+                  [(QMessageBox.Yes, "Sí"), (QMessageBox.No, "No")])
+    caja.setDefaultButton(QMessageBox.Yes)
+    return caja.exec() == QMessageBox.Yes
 
 
 def elegir_escaneado(padre) -> str | None:

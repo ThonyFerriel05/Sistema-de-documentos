@@ -115,6 +115,9 @@ QHeaderView::section {{
 }}
 /* ---- Formularios ---- */
 QDialog#formulario {{ background: {FONDO}; }}
+/* Avisos y ventanas de Windows (elegir archivo, carpeta): siempre claros */
+QMessageBox, QDialog, QInputDialog {{ background: {FONDO}; color: {TEXTO}; }}
+QMessageBox QLabel {{ color: {TEXTO}; }}
 #tituloFormulario {{ font-size: 20px; font-weight: 600; }}
 #estadoCopia {{ font-weight: 600; padding: 6px 0; }}
 #estadoCopia[color="verde"] {{ color: {ESTADO_COLOR["completado"]}; }}
@@ -145,3 +148,36 @@ QScrollBar:vertical {{ background: transparent; width: 10px; }}
 QScrollBar::handle:vertical {{ background: #D9DCE1; border-radius: 5px; min-height: 30px; }}
 QScrollBar::add-line, QScrollBar::sub-line {{ height: 0; }}
 """
+
+
+def paleta_clara():
+    """Colores base claros para todo el programa.
+
+    Si Windows está en modo oscuro, Qt pinta los avisos y las ventanas de
+    elegir archivo con fondo negro, y el texto oscuro no se lee. Con esta
+    paleta el programa se ve siempre claro.
+    """
+    from PySide6.QtGui import QColor, QPalette
+    p = QPalette()
+    blanco, texto, suave = QColor(FONDO), QColor(TEXTO), QColor(TEXTO_SUAVE)
+    for grupo in (QPalette.Active, QPalette.Inactive):
+        p.setColor(grupo, QPalette.Window, blanco)
+        p.setColor(grupo, QPalette.WindowText, texto)
+        p.setColor(grupo, QPalette.Base, blanco)
+        p.setColor(grupo, QPalette.AlternateBase, QColor(FONDO_MENU))
+        p.setColor(grupo, QPalette.Text, texto)
+        p.setColor(grupo, QPalette.Button, QColor(FONDO_MENU))
+        p.setColor(grupo, QPalette.ButtonText, texto)
+        p.setColor(grupo, QPalette.ToolTipBase, blanco)
+        p.setColor(grupo, QPalette.ToolTipText, texto)
+        p.setColor(grupo, QPalette.PlaceholderText, suave)
+        p.setColor(grupo, QPalette.Highlight, QColor(ACENTO))
+        p.setColor(grupo, QPalette.HighlightedText, blanco)
+        p.setColor(grupo, QPalette.BrightText, blanco)
+        p.setColor(grupo, QPalette.Link, QColor(ACENTO))
+    for rol in (QPalette.WindowText, QPalette.Text, QPalette.ButtonText):
+        p.setColor(QPalette.Disabled, rol, suave)
+    p.setColor(QPalette.Disabled, QPalette.Window, blanco)
+    p.setColor(QPalette.Disabled, QPalette.Base, blanco)
+    p.setColor(QPalette.Disabled, QPalette.Button, QColor(FONDO_MENU))
+    return p

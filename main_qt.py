@@ -16,7 +16,7 @@ from PySide6.QtWidgets import QApplication, QMessageBox
 
 from database import CARPETA_PROGRAMA
 from servicios.inicio import preparar_sistema
-from vistas_qt.estilo import QSS
+from vistas_qt.estilo import QSS, paleta_clara
 from vistas_qt.intro import Intro
 
 DURACION_MINIMA_INTRO = 1.8   # segundos: lo justo para verla, sin hacer esperar
@@ -25,6 +25,13 @@ DURACION_MINIMA_INTRO = 1.8   # segundos: lo justo para verla, sin hacer esperar
 def main():
     app = QApplication(sys.argv)
     app.setStyle("Fusion")      # base neutra; encima va nuestro estilo
+    # Siempre claro, aunque Windows esté en modo oscuro (si no, los avisos salen negros)
+    try:
+        from PySide6.QtCore import Qt
+        app.styleHints().setColorScheme(Qt.ColorScheme.Light)   # Qt 6.8 o más nuevo
+    except Exception:
+        pass
+    app.setPalette(paleta_clara())
     app.setStyleSheet(QSS)
     app.setWindowIcon(QIcon(str(CARPETA_PROGRAMA / "vistas_qt" / "iconos" / "sistema.ico")))
 
