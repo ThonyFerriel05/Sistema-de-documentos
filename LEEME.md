@@ -10,7 +10,6 @@ Versión beta. Python + PySide6 (ventanas) + SQLite (base de datos) + python-doc
    uv pip install -r requirements.txt
    .venv\Scripts\python.exe main_qt.py
    ```
-   (`main.py` abre la interfaz vieja de CustomTkinter, que queda solo como respaldo.)
 
 ## Dónde se guardan los datos (RNF04)
 
@@ -73,7 +72,6 @@ Requisito: Windows 10 u 11 de 64 bits (Python 3.13 no funciona en Windows 7 u 8)
 | `servicios/respaldo.py` | Copia de seguridad | RF12 |
 | `servicios/inicio.py` | Prepara la carpeta de datos y las plantillas la primera vez | RNF04 |
 | `vistas_qt/` | Las pantallas (PySide6) | "Pantalla" en los diagramas de secuencia |
-| `vistas/` | Pantallas viejas (CustomTkinter), solo respaldo | — |
 | `pruebas/` | Pruebas automáticas | Fase de pruebas |
 
 ## Cambios del 19 de noviembre de 2026
