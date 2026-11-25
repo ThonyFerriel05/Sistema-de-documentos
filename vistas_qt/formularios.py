@@ -71,10 +71,21 @@ def campo_texto(valor: str = "", ayuda: str = "") -> QLineEdit:
     return c
 
 
+def _ajustar_calendario(c):
+    """Calendario desplegable con tamaño fijo, la semana desde el lunes y sin cuadrícula."""
+    cal = c.calendarWidget()
+    cal.setMinimumSize(320, 250)
+    cal.setGridVisible(False)
+    cal.setFirstDayOfWeek(Qt.Monday)
+    cal.setVerticalHeaderFormat(cal.VerticalHeaderFormat.NoVerticalHeader)
+    cal.setHorizontalHeaderFormat(cal.HorizontalHeaderFormat.ShortDayNames)
+
+
 def campo_fecha(iso: str | None = None) -> QDateEdit:
     """Fecha con calendario desplegable; se muestra dd/mm/aaaa."""
     c = QDateEdit(); c.setObjectName("campo")
     c.setCalendarPopup(True); c.setDisplayFormat("dd/MM/yyyy")
+    _ajustar_calendario(c)
     c.setDate(QDate.fromString(iso, "yyyy-MM-dd") if iso else QDate.currentDate())
     return c
 
@@ -87,6 +98,7 @@ def campo_fecha_hora(iso: str | None = None) -> QDateTimeEdit:
     """Fecha y hora (ej. sello de recibido). Viene con la hora actual, pero se puede cambiar."""
     c = QDateTimeEdit(); c.setObjectName("campo")
     c.setCalendarPopup(True); c.setDisplayFormat("dd/MM/yyyy HH:mm")
+    _ajustar_calendario(c)
     c.setDateTime(QDateTime.fromString(iso, "yyyy-MM-dd HH:mm") if iso else QDateTime.currentDateTime())
     return c
 

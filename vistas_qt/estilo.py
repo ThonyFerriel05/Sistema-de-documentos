@@ -113,6 +113,24 @@ QHeaderView::section {{
     background: {FONDO}; border: none; color: {TEXTO_SUAVE};
     font-size: 12px; font-weight: 600; padding: 8px 10px;
 }}
+/* ---- Calendario desplegable de las fechas ----
+   Por dentro es una tabla: sin estas reglas toma el estilo de las tablas
+   de arriba (espacio a los costados) y los números no entran. */
+QCalendarWidget QTableView {{
+    background: white; selection-background-color: {ACENTO}; selection-color: white;
+    font-size: 13px; outline: none;
+}}
+QCalendarWidget QTableView::item {{ padding: 0; }}
+QCalendarWidget QTableView::item:hover {{ background: {ACENTO_SUAVE}; }}
+QCalendarWidget QWidget#qt_calendar_navigationbar {{ background: {FONDO_MENU}; }}
+QCalendarWidget QToolButton {{
+    color: {TEXTO}; background: transparent; border: none; font-weight: 600;
+    padding: 6px 8px; border-radius: 6px;
+}}
+QCalendarWidget QToolButton:hover {{ background: {ACENTO_SUAVE}; }}
+QCalendarWidget QToolButton::menu-indicator {{ image: none; width: 0; }}
+QCalendarWidget QSpinBox {{ background: white; color: {TEXTO}; border: 1px solid #DADDE3; border-radius: 6px; }}
+QCalendarWidget QMenu {{ background: white; }}
 /* ---- Formularios ---- */
 QDialog#formulario {{ background: {FONDO}; }}
 /* Avisos y ventanas de Windows (elegir archivo, carpeta): siempre claros */
